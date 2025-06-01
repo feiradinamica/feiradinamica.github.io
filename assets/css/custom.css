@@ -1,0 +1,64 @@
+.card.shadow-sm {
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border: none;
+}
+
+.card.shadow-sm:hover {
+    border: none !important;
+    background: #f5f9ff !important;
+    box-shadow: 0 4px 12px rgba(40, 51, 79, 0.1) !important;
+}
+
+.card-title-text:hover {
+    color: #28334f !important;
+}
+
+.theme-icon-holder:hover svg {
+    fill: #3a4a6e !important;
+}
+
+.card-link-mask:hover::after {
+    background: rgba(40, 51, 79, 0.05) !important;
+}
+
+/* Adicione junto com o hover para um efeito premium */
+@keyframes softPulse {
+    0% { border-left-width: 3px; }
+    50% { border-left-width: 5px; }
+    100% { border-left-width: 3px; }
+}
+
+.card.shadow-sm:hover {
+    animation: softPulse 1.5s infinite;
+}
+
+/* Fundo da bolinha: AZUL */
+.theme-icon-holder.card-icon-holder {
+  background-color: #f5f9ff !important;
+}
+
+/* Fundo da bolinha: BRANCO */
+.card:hover .theme-icon-holder.card-icon-holder {
+  background-color: #ffffff !important;
+}
+
+/* Transição suave (opcional) */
+.theme-icon-holder.card-icon-holder,
+.theme-icon-holder svg.svg-inline--fa {
+  transition: all 0.3s ease !important;
+}
+
+.theme-icon-holder {
+  background-color: #f5f9ff !important;
+}
+
+.nav-item.active .theme-icon-holder {
+  background-color: #F63700 !important;
+}
+
+.docs-branding .top-search-box {
+  width: 500px;
+  margin-left: 300px; /* garante que não está sendo empurrado */
+  margin-right: auto; /* empurra para a esquerda no flex */
+  width: 100%;
+}
