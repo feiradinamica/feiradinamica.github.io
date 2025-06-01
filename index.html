@@ -13,7 +13,7 @@
 </head>
 
 <body class="docs-page">
-    <div id="search-results" style="position: absolute; background: white; border: 1px solid #ccc; max-height: 300px; overflow-y: auto; width: 300px; display: none; z-index: 9999; box-shadow: 0 2px 8px rgba(0,0,0,0.15);"></div>
+    <div id="search-results" style="position: absolute; background: white; border: 1px solid #ccc; max-height: 100%; overflow-y: auto; width: 300px; display: none; z-index: 9999; box-shadow: 0 2px 8px rgba(0,0,0,0.15);"></div>
     <header class="header fixed-top">
         <div class="branding docs-branding">
             <div class="container-fluid position-relative py-2">
@@ -178,8 +178,7 @@
             const searchInputMobile = document.getElementById('search-input-mobile');
             const searchResultsContainer = document.getElementById('search-results');
             const docsSidebar = document.getElementById('docs-sidebar');
-            // Não precisamos do toggler aqui para a lógica de fechamento global
-            // const docsSidebarToggler = document.getElementById('docs-sidebar-toggler'); 
+            const docsSidebarToggler = document.getElementById('docs-sidebar-toggler'); // Pegar o botão do hamburguer
 
             let activeSearchInput = null;
 
@@ -222,7 +221,8 @@
                         positionResults();
 
                         Array.from(searchResultsContainer.querySelectorAll('li')).forEach(li => {
-                            li.addEventListener('click', () => {
+                            li.addEventListener('click', (event) => { // Captura o evento aqui
+                                event.stopPropagation(); // Impede a propagação do clique para o documento
                                 const targetId = li.getAttribute('data-target-id');
                                 const targetElement = document.getElementById(targetId);
                                 if (targetElement) {
@@ -230,11 +230,16 @@
                                     if (searchInput) searchInput.value = '';
                                     if (searchInputMobile) searchInputMobile.value = '';
                                     
-                                    // Apenas fechar a sidebar mobile se ela estiver visível e a tela for pequena,
-                                    // após a seleção de um resultado de pesquisa.
+                                    // Fecha a sidebar mobile APENAS se estiver visível e a tela for pequena
+                                    // E apenas se o clique no item de busca for para navegar (senão a sidebar já vai fechar)
                                     if (docsSidebar && docsSidebar.classList.contains('sidebar-visible') && window.innerWidth < 1200) {
                                         docsSidebar.classList.remove('sidebar-visible');
                                         docsSidebar.classList.add('sidebar-hidden');
+                                        // Oculta o overlay se o tema usa um
+                                        const sidebarOverlay = document.querySelector('.sidebar-overlay');
+                                        if (sidebarOverlay) {
+                                            sidebarOverlay.classList.remove('active');
+                                        }
                                     }
 
                                     targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -255,30 +260,105 @@
                     }
                 }
 
-                // Event listeners para os campos de busca
+                // FUNÇÃO PARA LIDAR COM EVENTOS DE CLIQUE/TOQUE PARA FECHAR ELEMENTOS
+                function handleOutsideInteraction(e) {
+                    const target = e.target;
+                    
+                    // Verifica se o clique/toque foi dentro de algum dos elementos que DEVEM permanecer abertos
+                    const isClickInsideSearchInput = (searchInput && searchInput.contains(target)) || (searchInputMobile && searchInputMobile.contains(target));
+                    const isClickInsideSearchResults = searchResultsContainer.contains(target);
+                    const isClickInsideSidebar = docsSidebar.contains(target);
+                    const isClickOnSidebarToggler = docsSidebarToggler.contains(target);
+
+                    // Se a caixa de resultados da pesquisa estiver aberta E o clique/toque foi FORA de TODOS os elementos relevantes
+                    if (searchResultsContainer.style.display === 'block' && 
+                        !isClickInsideSearchInput && 
+                        !isClickInsideSearchResults &&
+                        !isClickInsideSidebar &&
+                        !isClickOnSidebarToggler) {
+                        
+                        searchResultsContainer.style.display = 'none';
+                        activeSearchInput = null;
+                    }
+                    // IMPORTANTE: Não fechamos a sidebar aqui. Isso é responsabilidade do Docs.js
+                }
+
+                // Adicionar listeners para eventos de clique e toque em toda a página
+                // Usando 'capture' (true) para pegar o evento na fase de captura, antes de outros manipuladores
+                document.addEventListener('click', handleOutsideInteraction, true);
+                document.addEventListener('touchend', handleOutsideInteraction, true);
+
+
+                // Adicionar event listeners específicos para os campos de busca e sidebar para STOP PROPAGATION
                 if (searchInput) {
-                    searchInput.addEventListener('focus', function() {
+                    searchInput.addEventListener('focus', function(event) {
                         activeSearchInput = this;
                         displaySearchResults(this);
+                        event.stopPropagation(); // Impede que o foco no input feche algo
                     });
-                    searchInput.addEventListener('input', function () {
+                    searchInput.addEventListener('input', function(event) {
                         displaySearchResults(this);
+                        event.stopPropagation();
                     });
-                } else {
-                    console.warn("Feira Dinâmica: Elemento 'search-input' não encontrado.");
+                    searchInput.addEventListener('click', function(event) {
+                        event.stopPropagation(); // Importante para mobile
+                    });
+                    searchInput.addEventListener('touchend', function(event) {
+                        event.stopPropagation(); // Importante para mobile
+                    });
                 }
                 
                 if (searchInputMobile) {
-                    searchInputMobile.addEventListener('focus', function() {
+                    searchInputMobile.addEventListener('focus', function(event) {
                         activeSearchInput = this;
                         displaySearchResults(this);
+                        event.stopPropagation(); // Impede que o foco no input feche algo
                     });
-                    searchInputMobile.addEventListener('input', function() {
+                    searchInputMobile.addEventListener('input', function(event) {
                         displaySearchResults(this);
+                        event.stopPropagation();
                     });
-                } else {
-                    console.warn("Feira Dinâmica: Elemento 'search-input-mobile' não encontrado.");
+                    searchInputMobile.addEventListener('click', function(event) {
+                        event.stopPropagation(); // Importante para mobile
+                    });
+                    searchInputMobile.addEventListener('touchend', function(event) {
+                        event.stopPropagation(); // Importante para mobile
+                    });
                 }
+
+                // Impede que cliques/toques dentro da caixa de resultados fechem a própria caixa ou a sidebar
+                searchResultsContainer.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                });
+                searchResultsContainer.addEventListener('touchend', function(event) {
+                    event.stopPropagation();
+                });
+                
+                // Impede que cliques/toques na sidebar (onde está o input mobile) fechem a sidebar ou a caixa de resultados
+                // (Exceto o clique no toggler, que tem seu próprio comportamento)
+                if (docsSidebar) {
+                    docsSidebar.addEventListener('click', function(event) {
+                        // Permite que o clique no toggler funcione normalmente
+                        if (!docsSidebarToggler.contains(event.target)) {
+                            event.stopPropagation();
+                        }
+                    });
+                     docsSidebar.addEventListener('touchend', function(event) {
+                        if (!docsSidebarToggler.contains(event.target)) {
+                            event.stopPropagation();
+                        }
+                    });
+                }
+                // Adicionalmente, para o botão do hambúrguer, garantir que não fecha nada inesperadamente
+                if (docsSidebarToggler) {
+                    docsSidebarToggler.addEventListener('click', function(event) {
+                        event.stopPropagation(); // Só alterna a sidebar, não fecha a busca
+                    });
+                    docsSidebarToggler.addEventListener('touchend', function(event) {
+                        event.stopPropagation(); // Só alterna a sidebar, não fecha a busca
+                    });
+                }
+
 
                 // Reposicionamento ao rolar ou redimensionar (com debounce)
                 let resizeTimer;
@@ -290,39 +370,7 @@
                     clearTimeout(resizeTimer);
                     resizeTimer = setTimeout(positionResults, 50);
                 });
-
-                // NOVO TRATAMENTO PARA FECHAR A CAIXA DE PESQUISA AO CLICAR FORA
-                // Usando 'mouseup' ou 'touchend' para melhor compatibilidade mobile
-                document.addEventListener('touchend', function (e) {
-                    handleOutsideClick(e);
-                });
-                document.addEventListener('click', function (e) {
-                    handleOutsideClick(e);
-                });
-
-                function handleOutsideClick(e) {
-                    const target = e.target;
-                    
-                    // Verifica se o clique foi em algum elemento que *NÃO* deve fechar a caixa de resultados
-                    const isClickInsideSearchInput = (searchInput && searchInput.contains(target)) || (searchInputMobile && searchInputMobile.contains(target));
-                    const isClickInsideSearchResults = searchResultsContainer.contains(target);
-                    const isClickInsideSidebar = docsSidebar.contains(target); // Verifica se o clique foi DENTRO da sidebar
-                    const isClickOnSidebarToggler = target.closest('#docs-sidebar-toggler'); // Usa closest para elementos filhos
-
-                    // Se a caixa de resultados da pesquisa estiver aberta E o clique foi FORA de todos os elementos relevantes
-                    if (searchResultsContainer.style.display === 'block' && 
-                        !isClickInsideSearchInput && 
-                        !isClickInsideSearchResults &&
-                        !isClickInsideSidebar && // Adicionado para garantir que clicar na sidebar não feche os resultados
-                        !isClickOnSidebarToggler) { // Adicionado para garantir que clicar no botão do hambúrguer não feche os resultados
-                        
-                        searchResultsContainer.style.display = 'none';
-                        activeSearchInput = null;
-                        // A sidebar não será fechada por esta lógica, ela é gerenciada pelo docs.js ou links internos
-                    }
-                }
                 
-                // Fechar resultados ao pressionar ESC
                 document.addEventListener('keydown', function(e) {
                     if (e.key === "Escape" && searchResultsContainer.style.display === 'block') {
                         searchResultsContainer.style.display = 'none';
