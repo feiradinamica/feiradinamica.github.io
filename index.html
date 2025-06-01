@@ -13,7 +13,7 @@
 </head>
 
 <body class="docs-page">
-	<div id="search-results" style="position: absolute; background: white; border: 1px solid #ccc; max-height: 100%; overflow-y: auto; width: 300px; display: none; z-index: 9999; box-shadow: 0 2px 8px rgba(0,0,0,0.15);"></div>
+    <div id="search-results" style="position: absolute; background: white; border: 1px solid #ccc; max-height: 300px; overflow-y: auto; width: 300px; display: none; z-index: 9999; box-shadow: 0 2px 8px rgba(0,0,0,0.15);"></div>
     <header class="header fixed-top">
         <div class="branding docs-branding">
             <div class="container-fluid position-relative py-2">
@@ -187,6 +187,7 @@
             const searchInput = document.getElementById('search-input'); // Input do header (desktop)
             const searchInputMobile = document.getElementById('search-input-mobile'); // Input do sidebar (mobile)
             const searchResultsContainer = document.getElementById('search-results');
+            const docsSidebar = document.getElementById('docs-sidebar'); // Referência à sidebar
 
             // Variável para controlar qual input está ativo no momento
             let activeSearchInput = null;
@@ -243,11 +244,10 @@
                                     if (searchInput) searchInput.value = ''; // Limpa ambos os inputs
                                     if (searchInputMobile) searchInputMobile.value = ''; // Limpa ambos os inputs
                                     
-                                    // Oculta a sidebar mobile se estiver visível após a navegação
-                                    const sidebar = document.getElementById('docs-sidebar');
-                                    if (sidebar && sidebar.classList.contains('sidebar-visible') && window.innerWidth < 1200) {
-                                        sidebar.classList.remove('sidebar-visible');
-                                        sidebar.classList.add('sidebar-hidden');
+                                    // *** AQUI ESTÁ A MUDANÇA: A sidebar só fecha APÓS a seleção de um item de busca ***
+                                    if (docsSidebar && docsSidebar.classList.contains('sidebar-visible') && window.innerWidth < 1200) {
+                                        docsSidebar.classList.remove('sidebar-visible');
+                                        docsSidebar.classList.add('sidebar-hidden');
                                     }
 
                                     targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -273,9 +273,8 @@
                 // Event Listeners para o input desktop
                 if (searchInput) {
                     searchInput.addEventListener('focus', function() {
-                        // Quando foca, mesmo que vazio, define como ativo e prepara para exibir ao digitar
                         activeSearchInput = this;
-                        displaySearchResults(this); // Chama para verificar se já tem conteúdo ou para esconder se estiver vazio
+                        displaySearchResults(this);
                     });
                     searchInput.addEventListener('input', function () {
                         displaySearchResults(this);
@@ -288,7 +287,7 @@
                 if (searchInputMobile) {
                     searchInputMobile.addEventListener('focus', function() {
                         activeSearchInput = this;
-                        displaySearchResults(this); // Chama para verificar se já tem conteúdo ou para esconder se estiver vazio
+                        displaySearchResults(this);
                     });
                     searchInputMobile.addEventListener('input', function() {
                         displaySearchResults(this);
@@ -298,23 +297,26 @@
                 }
 
                 // Reposicionar ao rolar ou redimensionar
-                // Adicionado debounce para otimizar o reposicionamento em eventos de scroll e resize
                 let resizeTimer;
                 window.addEventListener('scroll', () => {
                     clearTimeout(resizeTimer);
-                    resizeTimer = setTimeout(positionResults, 50); // Delay de 50ms
+                    resizeTimer = setTimeout(positionResults, 50);
                 }, true);
                 window.addEventListener('resize', () => {
                     clearTimeout(resizeTimer);
-                    resizeTimer = setTimeout(positionResults, 50); // Delay de 50ms
+                    resizeTimer = setTimeout(positionResults, 50);
                 });
 
-                // Fechar resultados ao clicar fora de qualquer input de pesquisa ou do container de resultados
+                // Fechar resultados ao clicar fora DE TUDO (inputs de pesquisa, resultados e sidebar)
                 document.addEventListener('click', function (e) {
+                    // Clicou fora do container de resultados E fora do input de busca E fora da sidebar
                     if (searchResultsContainer.style.display === 'block' && 
                         !searchResultsContainer.contains(e.target) && 
                         e.target !== searchInput && 
-                        e.target !== searchInputMobile) {
+                        e.target !== searchInputMobile &&
+                        !docsSidebar.contains(e.target) && // Verifica se clicou fora da sidebar
+                        e.target.id !== 'docs-sidebar-toggler') { // E também fora do botão da sidebar
+                        
                         searchResultsContainer.style.display = 'none';
                         activeSearchInput = null; // Limpa o input ativo
                     }
