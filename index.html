@@ -178,7 +178,8 @@
             const searchInputMobile = document.getElementById('search-input-mobile');
             const searchResultsContainer = document.getElementById('search-results');
             const docsSidebar = document.getElementById('docs-sidebar');
-            const docsSidebarToggler = document.getElementById('docs-sidebar-toggler'); // Pegar o botão do hamburguer
+            // Não precisamos do toggler aqui para a lógica de fechamento global
+            // const docsSidebarToggler = document.getElementById('docs-sidebar-toggler'); 
 
             let activeSearchInput = null;
 
@@ -229,7 +230,8 @@
                                     if (searchInput) searchInput.value = '';
                                     if (searchInputMobile) searchInputMobile.value = '';
                                     
-                                    // Fecha a sidebar mobile APENAS se estiver visível e a tela for pequena
+                                    // Apenas fechar a sidebar mobile se ela estiver visível e a tela for pequena,
+                                    // após a seleção de um resultado de pesquisa.
                                     if (docsSidebar && docsSidebar.classList.contains('sidebar-visible') && window.innerWidth < 1200) {
                                         docsSidebar.classList.remove('sidebar-visible');
                                         docsSidebar.classList.add('sidebar-hidden');
@@ -253,6 +255,7 @@
                     }
                 }
 
+                // Event listeners para os campos de busca
                 if (searchInput) {
                     searchInput.addEventListener('focus', function() {
                         activeSearchInput = this;
@@ -277,6 +280,7 @@
                     console.warn("Feira Dinâmica: Elemento 'search-input-mobile' não encontrado.");
                 }
 
+                // Reposicionamento ao rolar ou redimensionar (com debounce)
                 let resizeTimer;
                 window.addEventListener('scroll', () => {
                     clearTimeout(resizeTimer);
@@ -287,25 +291,38 @@
                     resizeTimer = setTimeout(positionResults, 50);
                 });
 
-                // NOVO TRATAMENTO PARA CLIQUE FORA
+                // NOVO TRATAMENTO PARA FECHAR A CAIXA DE PESQUISA AO CLICAR FORA
+                // Usando 'mouseup' ou 'touchend' para melhor compatibilidade mobile
+                document.addEventListener('touchend', function (e) {
+                    handleOutsideClick(e);
+                });
                 document.addEventListener('click', function (e) {
+                    handleOutsideClick(e);
+                });
+
+                function handleOutsideClick(e) {
                     const target = e.target;
                     
-                    // Verifica se o clique foi dentro de algum dos elementos que queremos manter visíveis
+                    // Verifica se o clique foi em algum elemento que *NÃO* deve fechar a caixa de resultados
                     const isClickInsideSearchInput = (searchInput && searchInput.contains(target)) || (searchInputMobile && searchInputMobile.contains(target));
                     const isClickInsideSearchResults = searchResultsContainer.contains(target);
-                    const isClickInsideSidebar = docsSidebar.contains(target);
-                    const isClickOnToggler = docsSidebarToggler.contains(target); // Clicou no botão do hamburguer
+                    const isClickInsideSidebar = docsSidebar.contains(target); // Verifica se o clique foi DENTRO da sidebar
+                    const isClickOnSidebarToggler = target.closest('#docs-sidebar-toggler'); // Usa closest para elementos filhos
 
-                    // Se não clicou dentro de NENHUM desses elementos
-                    if (!isClickInsideSearchInput && !isClickInsideSearchResults && !isClickInsideSidebar && !isClickOnToggler) {
-                        searchResultsContainer.style.display = 'none'; // Fecha a caixa de resultados
-                        activeSearchInput = null; // Limpa o input ativo
-                        // NOTA: A sidebar só fecha com o botão ou clicando em um link dentro dela
-                        // (com a lógica já existente no assets/js/docs.js ou no click do item da busca)
+                    // Se a caixa de resultados da pesquisa estiver aberta E o clique foi FORA de todos os elementos relevantes
+                    if (searchResultsContainer.style.display === 'block' && 
+                        !isClickInsideSearchInput && 
+                        !isClickInsideSearchResults &&
+                        !isClickInsideSidebar && // Adicionado para garantir que clicar na sidebar não feche os resultados
+                        !isClickOnSidebarToggler) { // Adicionado para garantir que clicar no botão do hambúrguer não feche os resultados
+                        
+                        searchResultsContainer.style.display = 'none';
+                        activeSearchInput = null;
+                        // A sidebar não será fechada por esta lógica, ela é gerenciada pelo docs.js ou links internos
                     }
-                });
+                }
                 
+                // Fechar resultados ao pressionar ESC
                 document.addEventListener('keydown', function(e) {
                     if (e.key === "Escape" && searchResultsContainer.style.display === 'block') {
                         searchResultsContainer.style.display = 'none';
@@ -322,6 +339,7 @@
                 console.warn("Feira Dinâmica: Elemento 'search-results' não encontrado.");
             }
             
+            // Inicializar os plugins do tema (incluindo Gumshoe) APÓS o buildContent()
             if (typeof Docs !== 'undefined' && typeof Docs.init === 'function') {
                 Docs.init();
                 console.log('Feira Dinâmica: Docs.init() chamado.');
