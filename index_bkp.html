@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <title>Feira Dinâmica - Documentação</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700&display=swap" rel="stylesheet">
+    <script defer src="assets/fontawesome/js/all.min.js"></script>
+    <link id="theme-style" rel="stylesheet" href="assets/css/theme.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+</head>
+
+<body class="docs-page">
+    <div id="search-results" style="position: absolute; background: white; border: 1px solid #ccc; max-height: 100%; overflow-y: auto; width: 300px; display: none; z-index: 9999; box-shadow: 0 2px 8px rgba(0,0,0,0.15);"></div>
+    <header class="header fixed-top">
+        <div class="branding docs-branding">
+            <div class="container-fluid position-relative py-2">
+                <div class="docs-logo-wrapper">
+                    <button id="docs-sidebar-toggler" class="docs-sidebar-toggler docs-sidebar-visible me-2 d-xl-none" type="button">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                    <div class="site-logo">
+                        <a class="navbar-brand" href="index.html">
+                            <img class="logo-icon me-2" src="assets/images/feiradinamica-logo2.jpeg" alt="logo" height="32px">
+                            <span class="logo-text"><span class="text-alt">Feira</span> Dinâmica</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="docs-top-utilities d-flex justify-content-end align-items-center">
+                    <div class="top-search-box d-none d-lg-flex">
+                        <form class="search-form">
+                            <input type="text" placeholder="Pesquisar..." name="search" class="form-control search-input" id="search-input" autocomplete="off">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="docs-wrapper">
+        <div id="docs-sidebar" class="docs-sidebar">
+            <div class="top-search-box d-lg-none p-3">
+                <form class="search-form">
+                    <input type="text" placeholder="Pesquisar..." name="search-mobile" class="form-control search-input" id="search-input-mobile" autocomplete="off">
+                </form>
+            </div>
+            <nav id="docs-nav" class="docs-nav navbar">
+                <ul class="section-items list-unstyled nav flex-column pb-3" id="menu-container"></ul>
+            </nav>
+        </div>
+        <div class="docs-content">
+            <div class="container" id="content-container"></div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-bottom text-center py-5">
+            <small class="copyright">Desenvolvido por <a class="theme-link" href="http://wa.me/5535987097626" target="_blank">Gabriel R. Gonçalves</a> © 2025</small>
+        </div>
+    </footer>
+
+    <script>
+        const appData = {
+            "sections": [
+                {
+                    "id": "section-1",
+                    "title": "Introdução",
+                    "icon": "fas fa-map-signs",
+                    "items": [
+                        { "id": "item-1-1", "title": "Introdução / Item 1.1", "content": "Vivamus efficitur fringilla ullamcorper. Cras condimentum condimentum mauris, vitae facilisis leo. Aliquam sagittis purus nisi, at commodo augue convallis id. Sed interdum turpis quis felis bibendum imperdiet. Mauris pellentesque urna eu leo gravida iaculis." },
+                        { "id": "item-1-2", "title": "Introdução / Item 1.2", "content": "In fringilla odio in felis ultricies porttitor. Donec at purus libero. Vestibulum libero orci, commodo nec arcu sit amet, commodo sollicitudin est. Vestibulum ultricies malesuada tempor." },
+                        { "id": "item-1-3", "title": "Introdução / Item 1.3", "content": "Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor. Ut in nulla enim." }
+                    ]
+                },
+                {
+                    "id": "section-2",
+                    "title": "Central de Vendedores",
+                    "icon": "fas fa-box",
+                    "items": [
+                        { "id": "item-2-1", "title": "Central de Vendedores / Item 2.1", "content": "Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi." },
+                        { "id": "item-2-2", "title": "Central de Vendedores / Item 2.2", "content": "Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum." },
+                        { "id": "item-2-3", "title": "Central de Vendedores / Item 2.3", "content": "Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur sodales ligula in libero." }
+                    ]
+                },
+                {
+                    "id": "section-3",
+                    "title": "Perguntas Frequentes",
+                    "icon": "fas fa-lightbulb",
+                    "items": [
+                        { "id": "item-3-1", "title": "Perguntas Frequentes / Item 3.1", "content": "Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh. Aenean quam. In scelerisque sem at dolor." },
+                        { "id": "item-3-2", "title": "Perguntas Frequentes / Item 3.2", "content": "Maecenas mattis. Sed convallis tristique sem. Proin ut ligula vel nunc egestas porttitor. Morbi lectus risus, iaculis vel, suscipit quis, luctus non, massa." },
+                        { "id": "item-3-3", "title": "Perguntas Frequentes / Item 3.3", "content": "Fusce ac turpis quis ligula lacinia aliquet. Mauris ipsum. Nulla metus metus, ullamcorper vel, tincidunt sed, euismod in, nibh." }
+                    ]
+                }
+            ]
+        };
+
+        function buildContent() {
+            const menuContainer = document.getElementById('menu-container');
+            const contentContainer = document.getElementById('content-container');
+            menuContainer.innerHTML = '';
+            contentContainer.innerHTML = '';
+
+            appData.sections.forEach(section => {
+                const menuItem = document.createElement('li');
+                menuItem.className = 'nav-item section-title mt-3';
+                menuItem.innerHTML = `
+                    <a class="nav-link" href="#${section.id}" data-bs-toggle="collapse" data-bs-target="#${section.id}-items" aria-expanded="false" aria-controls="${section.id}-items">
+                        <span class="theme-icon-holder me-2"><i class="${section.icon}"></i></span>${section.title}
+                    </a>`;
+                menuContainer.appendChild(menuItem);
+
+                const subMenu = document.createElement('ul');
+                subMenu.id = `${section.id}-items`;
+                subMenu.className = 'list-unstyled collapse';
+                section.items.forEach(item => {
+                    const subItem = document.createElement('li');
+                    subItem.className = 'nav-item';
+                    subItem.innerHTML = `<a class="nav-link scrollto" href="#${item.id}">${item.title.split('/').pop().trim()}</a>`;
+                    subMenu.appendChild(subItem);
+                });
+                menuContainer.appendChild(subMenu);
+
+                const article = document.createElement('article');
+                article.className = 'docs-article';
+                article.id = section.id;
+                article.innerHTML = `
+                    <header class="docs-header">
+                        <h1 class="docs-heading">${section.title}</h1>
+                    </header>
+                    ${section.items.map(item => `
+                        <section class="docs-section" id="${item.id}">
+                            <h2 class="section-heading">${item.title}</h2>
+                            <p>${item.content}</p>
+                        </section>`).join('')}
+                `;
+                contentContainer.appendChild(article);
+            });
+        }
+
+        function escapeHtml(text) {
+            if (typeof text !== 'string') return '';
+            return text.replace(/[&<>"']/g, function (m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+            });
+        }
+
+        function searchContent(query) {
+            const results = [];
+            const normalizedQuery = query.toLowerCase().trim();
+            if (!normalizedQuery) return results;
+
+            appData.sections.forEach(section => {
+                section.items.forEach(item => {
+                    if (item.title.toLowerCase().includes(normalizedQuery) ||
+                        item.content.toLowerCase().includes(normalizedQuery)) {
+                        results.push({
+                            sectionTitle: section.title,
+                            title: item.title,
+                            content: item.content.length > 150 ? item.content.substring(0, 150) + '...' : item.content,
+                            id: item.id
+                        });
+                    }
+                });
+            });
+            return results;
+        }
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            buildContent();
+            console.log("Feira Dinâmica: Conteúdo e menu construídos.");
+
+            const searchInput = document.getElementById('search-input');
+            const searchInputMobile = document.getElementById('search-input-mobile');
+            const searchResultsContainer = document.getElementById('search-results');
+            const docsSidebar = document.getElementById('docs-sidebar');
+            const docsSidebarToggler = document.getElementById('docs-sidebar-toggler'); // Pegar o botão do hamburguer
+
+            let activeSearchInput = null;
+
+            if (searchResultsContainer) {
+                console.log("Feira Dinâmica: Configurando pesquisa...");
+
+                function positionResults() {
+                    if (searchResultsContainer.style.display === 'none' || !activeSearchInput) return;
+                    const rect = activeSearchInput.getBoundingClientRect();
+                    searchResultsContainer.style.top = (rect.bottom + 5 + window.scrollY) + 'px';
+                    searchResultsContainer.style.left = (rect.left + window.scrollX) + 'px';
+                    searchResultsContainer.style.width = rect.width + 'px';
+                }
+
+                function displaySearchResults(inputElement) {
+                    activeSearchInput = inputElement;
+                    const query = inputElement.value;
+                    const results = searchContent(query);
+                    
+                    if (query.trim() === '') {
+                        searchResultsContainer.innerHTML = '';
+                        searchResultsContainer.style.display = 'none';
+                        return;
+                    }
+
+                    if (results.length > 0) {
+                        let html = '<ul style="list-style:none; margin:0; padding:0;">';
+                        results.forEach(res => {
+                            html += `
+                                <li style="padding: 8px 12px; border-bottom: 1px solid #eee; cursor:pointer;"
+                                    data-target-id="${escapeHtml(res.id)}">
+                                    <strong style="display: block; margin-bottom: 2px;">${escapeHtml(res.title)}</strong>
+                                    <small style="color: #555;">${escapeHtml(res.content)}</small>
+                                </li>`;
+                        });
+                        html += '</ul>';
+
+                        searchResultsContainer.innerHTML = html;
+                        searchResultsContainer.style.display = 'block';
+                        positionResults();
+
+                        Array.from(searchResultsContainer.querySelectorAll('li')).forEach(li => {
+                            li.addEventListener('click', (event) => { // Captura o evento aqui
+                                event.stopPropagation(); // Impede a propagação do clique para o documento
+                                const targetId = li.getAttribute('data-target-id');
+                                const targetElement = document.getElementById(targetId);
+                                if (targetElement) {
+                                    searchResultsContainer.style.display = 'none';
+                                    if (searchInput) searchInput.value = '';
+                                    if (searchInputMobile) searchInputMobile.value = '';
+                                    
+                                    // Fecha a sidebar mobile APENAS se estiver visível e a tela for pequena
+                                    // E apenas se o clique no item de busca for para navegar (senão a sidebar já vai fechar)
+                                    if (docsSidebar && docsSidebar.classList.contains('sidebar-visible') && window.innerWidth < 1200) {
+                                        docsSidebar.classList.remove('sidebar-visible');
+                                        docsSidebar.classList.add('sidebar-hidden');
+                                        // Oculta o overlay se o tema usa um
+                                        const sidebarOverlay = document.querySelector('.sidebar-overlay');
+                                        if (sidebarOverlay) {
+                                            sidebarOverlay.classList.remove('active');
+                                        }
+                                    }
+
+                                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                                    const originalBg = targetElement.style.backgroundColor;
+                                    targetElement.style.transition = 'background-color 0.3s ease-in-out';
+                                    targetElement.style.backgroundColor = 'rgba(255, 255, 0, 0.3)';
+                                    setTimeout(() => {
+                                        targetElement.style.backgroundColor = originalBg || '';
+                                        targetElement.style.transition = '';
+                                    }, 1500);
+                                }
+                            });
+                        });
+                    } else {
+                        searchResultsContainer.innerHTML = '';
+                        searchResultsContainer.style.display = 'none';
+                    }
+                }
+
+                // FUNÇÃO PARA LIDAR COM EVENTOS DE CLIQUE/TOQUE PARA FECHAR ELEMENTOS
+                function handleOutsideInteraction(e) {
+                    const target = e.target;
+                    
+                    // Verifica se o clique/toque foi dentro de algum dos elementos que DEVEM permanecer abertos
+                    const isClickInsideSearchInput = (searchInput && searchInput.contains(target)) || (searchInputMobile && searchInputMobile.contains(target));
+                    const isClickInsideSearchResults = searchResultsContainer.contains(target);
+                    const isClickInsideSidebar = docsSidebar.contains(target);
+                    const isClickOnSidebarToggler = docsSidebarToggler.contains(target);
+
+                    // Se a caixa de resultados da pesquisa estiver aberta E o clique/toque foi FORA de TODOS os elementos relevantes
+                    if (searchResultsContainer.style.display === 'block' && 
+                        !isClickInsideSearchInput && 
+                        !isClickInsideSearchResults &&
+                        !isClickInsideSidebar &&
+                        !isClickOnSidebarToggler) {
+                        
+                        searchResultsContainer.style.display = 'none';
+                        activeSearchInput = null;
+                    }
+                    // IMPORTANTE: Não fechamos a sidebar aqui. Isso é responsabilidade do Docs.js
+                }
+
+                // Adicionar listeners para eventos de clique e toque em toda a página
+                // Usando 'capture' (true) para pegar o evento na fase de captura, antes de outros manipuladores
+                document.addEventListener('click', handleOutsideInteraction, true);
+                document.addEventListener('touchend', handleOutsideInteraction, true);
+
+
+                // Adicionar event listeners específicos para os campos de busca e sidebar para STOP PROPAGATION
+                if (searchInput) {
+                    searchInput.addEventListener('focus', function(event) {
+                        activeSearchInput = this;
+                        displaySearchResults(this);
+                        event.stopPropagation(); // Impede que o foco no input feche algo
+                    });
+                    searchInput.addEventListener('input', function(event) {
+                        displaySearchResults(this);
+                        event.stopPropagation();
+                    });
+                    searchInput.addEventListener('click', function(event) {
+                        event.stopPropagation(); // Importante para mobile
+                    });
+                    searchInput.addEventListener('touchend', function(event) {
+                        event.stopPropagation(); // Importante para mobile
+                    });
+                }
+                
+                if (searchInputMobile) {
+                    searchInputMobile.addEventListener('focus', function(event) {
+                        activeSearchInput = this;
+                        displaySearchResults(this);
+                        event.stopPropagation(); // Impede que o foco no input feche algo
+                    });
+                    searchInputMobile.addEventListener('input', function(event) {
+                        displaySearchResults(this);
+                        event.stopPropagation();
+                    });
+                    searchInputMobile.addEventListener('click', function(event) {
+                        event.stopPropagation(); // Importante para mobile
+                    });
+                    searchInputMobile.addEventListener('touchend', function(event) {
+                        event.stopPropagation(); // Importante para mobile
+                    });
+                }
+
+                // Impede que cliques/toques dentro da caixa de resultados fechem a própria caixa ou a sidebar
+                searchResultsContainer.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                });
+                searchResultsContainer.addEventListener('touchend', function(event) {
+                    event.stopPropagation();
+                });
+                
+                // Impede que cliques/toques na sidebar (onde está o input mobile) fechem a sidebar ou a caixa de resultados
+                // (Exceto o clique no toggler, que tem seu próprio comportamento)
+                if (docsSidebar) {
+                    docsSidebar.addEventListener('click', function(event) {
+                        // Permite que o clique no toggler funcione normalmente
+                        if (!docsSidebarToggler.contains(event.target)) {
+                            event.stopPropagation();
+                        }
+                    });
+                     docsSidebar.addEventListener('touchend', function(event) {
+                        if (!docsSidebarToggler.contains(event.target)) {
+                            event.stopPropagation();
+                        }
+                    });
+                }
+                // Adicionalmente, para o botão do hambúrguer, garantir que não fecha nada inesperadamente
+                if (docsSidebarToggler) {
+                    docsSidebarToggler.addEventListener('click', function(event) {
+                        event.stopPropagation(); // Só alterna a sidebar, não fecha a busca
+                    });
+                    docsSidebarToggler.addEventListener('touchend', function(event) {
+                        event.stopPropagation(); // Só alterna a sidebar, não fecha a busca
+                    });
+                }
+
+
+                // Reposicionamento ao rolar ou redimensionar (com debounce)
+                let resizeTimer;
+                window.addEventListener('scroll', () => {
+                    clearTimeout(resizeTimer);
+                    resizeTimer = setTimeout(positionResults, 50);
+                }, true);
+                window.addEventListener('resize', () => {
+                    clearTimeout(resizeTimer);
+                    resizeTimer = setTimeout(positionResults, 50);
+                });
+                
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === "Escape" && searchResultsContainer.style.display === 'block') {
+                        searchResultsContainer.style.display = 'none';
+                        if (activeSearchInput) {
+                            activeSearchInput.value = '';
+                            activeSearchInput.blur();
+                        }
+                        activeSearchInput = null;
+                    }
+                });
+
+                console.log("Feira Dinâmica: Pesquisa configurada para desktop e mobile.");
+            } else {
+                console.warn("Feira Dinâmica: Elemento 'search-results' não encontrado.");
+            }
+            
+            // Inicializar os plugins do tema (incluindo Gumshoe) APÓS o buildContent()
+            if (typeof Docs !== 'undefined' && typeof Docs.init === 'function') {
+                Docs.init();
+                console.log('Feira Dinâmica: Docs.init() chamado.');
+            } else {
+                console.error('Feira Dinâmica: Objeto Docs ou Docs.init() não definido após DOMContentLoaded. Verifique assets/js/docs.js.');
+            }
+        });
+    </script>
+
+    <script src="assets/plugins/popper.min.js"></script>
+    <script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/plugins/smoothscroll.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.8/highlight.min.js"></script>
+    <script src="assets/js/highlight-custom.js"></script>
+    <script src="assets/plugins/simplelightbox/simple-lightbox.min.js"></script>
+    <script src="assets/plugins/gumshoe/gumshoe.polyfills.min.js"></script>
+    <script src="assets/js/docs.js"></script>
+</body>
+</html>

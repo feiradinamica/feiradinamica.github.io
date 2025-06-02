@@ -13,8 +13,7 @@
 </head>
 
 <body class="docs-page">
-    <div id="search-results" style="position: absolute; background: white; border: 1px solid #ccc; max-height: 100%; overflow-y: auto; width: 300px; display: none; z-index: 9999; box-shadow: 0 2px 8px rgba(0,0,0,0.15);"></div>
-    <header class="header fixed-top">
+<header class="header fixed-top">
         <div class="branding docs-branding">
             <div class="container-fluid position-relative py-2">
                 <div class="docs-logo-wrapper">
@@ -30,12 +29,10 @@
                         </a>
                     </div>
                 </div>
-                <div class="docs-top-utilities d-flex justify-content-end align-items-center">
-                    <div class="top-search-box d-none d-lg-flex">
-                        <form class="search-form">
-                            <input type="text" placeholder="Pesquisar..." name="search" class="form-control search-input" id="search-input" autocomplete="off">
-                        </form>
-                    </div>
+                <div class="docs-top-utilities d-flex align-items-center">
+                    <button id="open-search-modal-btn" class="btn" type="button" aria-label="Abrir pesquisa">
+                        <i class="fas fa-search"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -43,11 +40,6 @@
 
     <div class="docs-wrapper">
         <div id="docs-sidebar" class="docs-sidebar">
-            <div class="top-search-box d-lg-none p-3">
-                <form class="search-form">
-                    <input type="text" placeholder="Pesquisar..." name="search-mobile" class="form-control search-input" id="search-input-mobile" autocomplete="off">
-                </form>
-            </div>
             <nav id="docs-nav" class="docs-nav navbar">
                 <ul class="section-items list-unstyled nav flex-column pb-3" id="menu-container"></ul>
             </nav>
@@ -62,6 +54,27 @@
             <small class="copyright">Desenvolvido por <a class="theme-link" href="http://wa.me/5535987097626" target="_blank">Gabriel R. Gonçalves</a> © 2025</small>
         </div>
     </footer>
+
+    <div id="search-modal" class="search-modal-overlay" style="display:none;">
+        <div class="search-modal-content">
+            <div class="search-modal-header">
+                    <div class="site-logo">
+                        <a class="navbar-brand" href="index.html">
+                            <img class="logo-icon me-2" src="assets/images/feiradinamica-logo2.jpeg" alt="logo" height="32px">
+                            <span class="logo-text"><span class="text-alt">Feira</span> Dinâmica</span>
+                        </a>
+                    </div>
+                <button type="button" class="search-modal-close" aria-label="Close Modal">&times;</button>
+            </div>
+            <div class="search-modal-body">
+                <form class="search-form">
+                    <input type="text" placeholder="Digite sua pesquisa..." name="modal-search" class="form-control search-input" id="modal-search-input">
+                    <button type="submit" class="btn search-btn" value="Search"><i class="fas fa-search"></i></button>
+                </form>
+                <ul id="modal-search-results" class="list-unstyled"></ul>
+            </div>
+        </div>
+    </div>
 
     <script>
         const appData = {
@@ -174,218 +187,158 @@
             buildContent();
             console.log("Feira Dinâmica: Conteúdo e menu construídos.");
 
-            const searchInput = document.getElementById('search-input');
-            const searchInputMobile = document.getElementById('search-input-mobile');
-            const searchResultsContainer = document.getElementById('search-results');
+            // REMOVIDOS searchInput e searchInputMobile pois usaremos apenas o modal
+            // const searchInput = document.getElementById('search-input');
+            // const searchInputMobile = document.getElementById('search-input-mobile');
+            // REMOVIDO searchResultsContainer pois agora os resultados ficam no modal
+            // const searchResultsContainer = document.getElementById('search-results');
             const docsSidebar = document.getElementById('docs-sidebar');
-            const docsSidebarToggler = document.getElementById('docs-sidebar-toggler'); // Pegar o botão do hamburguer
+            const docsSidebarToggler = document.getElementById('docs-sidebar-toggler');
+            const openSearchModalBtn = document.getElementById('open-search-modal-btn');
+            const searchModal = document.getElementById('search-modal');
+            const searchModalClose = searchModal ? searchModal.querySelector('.search-modal-close') : null;
+            const modalSearchInput = searchModal ? document.getElementById('modal-search-input') : null;
+            const modalSearchResults = searchModal ? document.getElementById('modal-search-results') : null;
 
-            let activeSearchInput = null;
+            // Variável activeSearchInput não é mais necessária
 
-            if (searchResultsContainer) {
-                console.log("Feira Dinâmica: Configurando pesquisa...");
-
-                function positionResults() {
-                    if (searchResultsContainer.style.display === 'none' || !activeSearchInput) return;
-                    const rect = activeSearchInput.getBoundingClientRect();
-                    searchResultsContainer.style.top = (rect.bottom + 5 + window.scrollY) + 'px';
-                    searchResultsContainer.style.left = (rect.left + window.scrollX) + 'px';
-                    searchResultsContainer.style.width = rect.width + 'px';
+            // Função para exibir resultados (AGORA APENAS NO MODAL)
+            function displaySearchResultsInModal(inputElement, resultsContainer) {
+                const query = inputElement.value;
+                const results = searchContent(query);
+                
+                if (query.trim() === '') {
+                    resultsContainer.innerHTML = '';
+                    return; // Não esconde o container, apenas limpa
                 }
 
-                function displaySearchResults(inputElement) {
-                    activeSearchInput = inputElement;
-                    const query = inputElement.value;
-                    const results = searchContent(query);
+                if (results.length > 0) {
+                    let html = ''; // Remover <ul> inicial e final, pois já está no HTML do modal
+                    results.forEach(res => {
+                        html += `
+                            <li style="padding: 8px 12px; border-bottom: 1px solid #eee; cursor:pointer;"
+                                data-target-id="${escapeHtml(res.id)}">
+                                <strong style="display: block; margin-bottom: 2px;">${escapeHtml(res.title)}</strong>
+                                <small style="color: #555;">${escapeHtml(res.content)}</small>
+                            </li>`;
+                    });
+
+                    resultsContainer.innerHTML = html;
                     
-                    if (query.trim() === '') {
-                        searchResultsContainer.innerHTML = '';
-                        searchResultsContainer.style.display = 'none';
-                        return;
-                    }
+                    // ATENÇÃO: A lógica de posicionamento de searchResultsContainer foi removida
+                    // pois agora os resultados estão dentro do modal.
+                } else {
+                    resultsContainer.innerHTML = '<li style="padding: 8px 12px; color: #888;">Nenhum resultado encontrado.</li>';
+                }
 
-                    if (results.length > 0) {
-                        let html = '<ul style="list-style:none; margin:0; padding:0;">';
-                        results.forEach(res => {
-                            html += `
-                                <li style="padding: 8px 12px; border-bottom: 1px solid #eee; cursor:pointer;"
-                                    data-target-id="${escapeHtml(res.id)}">
-                                    <strong style="display: block; margin-bottom: 2px;">${escapeHtml(res.title)}</strong>
-                                    <small style="color: #555;">${escapeHtml(res.content)}</small>
-                                </li>`;
-                        });
-                        html += '</ul>';
-
-                        searchResultsContainer.innerHTML = html;
-                        searchResultsContainer.style.display = 'block';
-                        positionResults();
-
-                        Array.from(searchResultsContainer.querySelectorAll('li')).forEach(li => {
-                            li.addEventListener('click', (event) => { // Captura o evento aqui
-                                event.stopPropagation(); // Impede a propagação do clique para o documento
-                                const targetId = li.getAttribute('data-target-id');
-                                const targetElement = document.getElementById(targetId);
-                                if (targetElement) {
-                                    searchResultsContainer.style.display = 'none';
-                                    if (searchInput) searchInput.value = '';
-                                    if (searchInputMobile) searchInputMobile.value = '';
-                                    
-                                    // Fecha a sidebar mobile APENAS se estiver visível e a tela for pequena
-                                    // E apenas se o clique no item de busca for para navegar (senão a sidebar já vai fechar)
-                                    if (docsSidebar && docsSidebar.classList.contains('sidebar-visible') && window.innerWidth < 1200) {
-                                        docsSidebar.classList.remove('sidebar-visible');
-                                        docsSidebar.classList.add('sidebar-hidden');
-                                        // Oculta o overlay se o tema usa um
-                                        const sidebarOverlay = document.querySelector('.sidebar-overlay');
-                                        if (sidebarOverlay) {
-                                            sidebarOverlay.classList.remove('active');
-                                        }
-                                    }
-
-                                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-                                    const originalBg = targetElement.style.backgroundColor;
-                                    targetElement.style.transition = 'background-color 0.3s ease-in-out';
-                                    targetElement.style.backgroundColor = 'rgba(255, 255, 0, 0.3)';
-                                    setTimeout(() => {
-                                        targetElement.style.backgroundColor = originalBg || '';
-                                        targetElement.style.transition = '';
-                                    }, 1500);
+                // Adiciona listeners para os resultados clicáveis
+                Array.from(resultsContainer.querySelectorAll('li')).forEach(li => {
+                    li.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        const targetId = li.getAttribute('data-target-id');
+                        const targetElement = document.getElementById(targetId);
+                        if (targetElement) {
+                            searchModal.style.display = 'none'; // Fecha o modal
+                            if (modalSearchInput) modalSearchInput.value = '';
+                            if (modalSearchResults) modalSearchResults.innerHTML = '';
+                            
+                            // Fecha a sidebar mobile APENAS se estiver visível e a tela for pequena
+                            if (docsSidebar && docsSidebar.classList.contains('sidebar-visible') && window.innerWidth < 1200) {
+                                docsSidebar.classList.remove('sidebar-visible');
+                                docsSidebar.classList.add('sidebar-hidden');
+                                const sidebarOverlay = document.querySelector('.sidebar-overlay'); // Adicionado se o seu tema tiver
+                                if (sidebarOverlay) {
+                                    sidebarOverlay.classList.remove('active');
                                 }
-                            });
-                        });
-                    } else {
-                        searchResultsContainer.innerHTML = '';
-                        searchResultsContainer.style.display = 'none';
-                    }
-                }
+                            }
 
-                // FUNÇÃO PARA LIDAR COM EVENTOS DE CLIQUE/TOQUE PARA FECHAR ELEMENTOS
-                function handleOutsideInteraction(e) {
-                    const target = e.target;
-                    
-                    // Verifica se o clique/toque foi dentro de algum dos elementos que DEVEM permanecer abertos
-                    const isClickInsideSearchInput = (searchInput && searchInput.contains(target)) || (searchInputMobile && searchInputMobile.contains(target));
-                    const isClickInsideSearchResults = searchResultsContainer.contains(target);
-                    const isClickInsideSidebar = docsSidebar.contains(target);
-                    const isClickOnSidebarToggler = docsSidebarToggler.contains(target);
+                            targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-                    // Se a caixa de resultados da pesquisa estiver aberta E o clique/toque foi FORA de TODOS os elementos relevantes
-                    if (searchResultsContainer.style.display === 'block' && 
-                        !isClickInsideSearchInput && 
-                        !isClickInsideSearchResults &&
-                        !isClickInsideSidebar &&
-                        !isClickOnSidebarToggler) {
-                        
-                        searchResultsContainer.style.display = 'none';
-                        activeSearchInput = null;
-                    }
-                    // IMPORTANTE: Não fechamos a sidebar aqui. Isso é responsabilidade do Docs.js
-                }
-
-                // Adicionar listeners para eventos de clique e toque em toda a página
-                // Usando 'capture' (true) para pegar o evento na fase de captura, antes de outros manipuladores
-                document.addEventListener('click', handleOutsideInteraction, true);
-                document.addEventListener('touchend', handleOutsideInteraction, true);
-
-
-                // Adicionar event listeners específicos para os campos de busca e sidebar para STOP PROPAGATION
-                if (searchInput) {
-                    searchInput.addEventListener('focus', function(event) {
-                        activeSearchInput = this;
-                        displaySearchResults(this);
-                        event.stopPropagation(); // Impede que o foco no input feche algo
-                    });
-                    searchInput.addEventListener('input', function(event) {
-                        displaySearchResults(this);
-                        event.stopPropagation();
-                    });
-                    searchInput.addEventListener('click', function(event) {
-                        event.stopPropagation(); // Importante para mobile
-                    });
-                    searchInput.addEventListener('touchend', function(event) {
-                        event.stopPropagation(); // Importante para mobile
-                    });
-                }
-                
-                if (searchInputMobile) {
-                    searchInputMobile.addEventListener('focus', function(event) {
-                        activeSearchInput = this;
-                        displaySearchResults(this);
-                        event.stopPropagation(); // Impede que o foco no input feche algo
-                    });
-                    searchInputMobile.addEventListener('input', function(event) {
-                        displaySearchResults(this);
-                        event.stopPropagation();
-                    });
-                    searchInputMobile.addEventListener('click', function(event) {
-                        event.stopPropagation(); // Importante para mobile
-                    });
-                    searchInputMobile.addEventListener('touchend', function(event) {
-                        event.stopPropagation(); // Importante para mobile
-                    });
-                }
-
-                // Impede que cliques/toques dentro da caixa de resultados fechem a própria caixa ou a sidebar
-                searchResultsContainer.addEventListener('click', function(event) {
-                    event.stopPropagation();
-                });
-                searchResultsContainer.addEventListener('touchend', function(event) {
-                    event.stopPropagation();
-                });
-                
-                // Impede que cliques/toques na sidebar (onde está o input mobile) fechem a sidebar ou a caixa de resultados
-                // (Exceto o clique no toggler, que tem seu próprio comportamento)
-                if (docsSidebar) {
-                    docsSidebar.addEventListener('click', function(event) {
-                        // Permite que o clique no toggler funcione normalmente
-                        if (!docsSidebarToggler.contains(event.target)) {
-                            event.stopPropagation();
+                            const originalBg = targetElement.style.backgroundColor;
+                            targetElement.style.transition = 'background-color 0.3s ease-in-out';
+                            targetElement.style.backgroundColor = 'rgba(255, 255, 0, 0.3)';
+                            setTimeout(() => {
+                                targetElement.style.backgroundColor = originalBg || '';
+                                targetElement.style.transition = '';
+                            }, 1500);
                         }
                     });
-                     docsSidebar.addEventListener('touchend', function(event) {
-                        if (!docsSidebarToggler.contains(event.target)) {
-                            event.stopPropagation();
-                        }
-                    });
-                }
-                // Adicionalmente, para o botão do hambúrguer, garantir que não fecha nada inesperadamente
-                if (docsSidebarToggler) {
-                    docsSidebarToggler.addEventListener('click', function(event) {
-                        event.stopPropagation(); // Só alterna a sidebar, não fecha a busca
-                    });
-                    docsSidebarToggler.addEventListener('touchend', function(event) {
-                        event.stopPropagation(); // Só alterna a sidebar, não fecha a busca
-                    });
-                }
-
-
-                // Reposicionamento ao rolar ou redimensionar (com debounce)
-                let resizeTimer;
-                window.addEventListener('scroll', () => {
-                    clearTimeout(resizeTimer);
-                    resizeTimer = setTimeout(positionResults, 50);
-                }, true);
-                window.addEventListener('resize', () => {
-                    clearTimeout(resizeTimer);
-                    resizeTimer = setTimeout(positionResults, 50);
                 });
-                
-                document.addEventListener('keydown', function(e) {
-                    if (e.key === "Escape" && searchResultsContainer.style.display === 'block') {
-                        searchResultsContainer.style.display = 'none';
-                        if (activeSearchInput) {
-                            activeSearchInput.value = '';
-                            activeSearchInput.blur();
-                        }
-                        activeSearchInput = null;
-                    }
-                });
-
-                console.log("Feira Dinâmica: Pesquisa configurada para desktop e mobile.");
-            } else {
-                console.warn("Feira Dinâmica: Elemento 'search-results' não encontrado.");
             }
+
+            // LISTENERS PARA O MODAL DE PESQUISA (Simplificado)
+            if (openSearchModalBtn && searchModal && modalSearchInput && modalSearchResults && searchModalClose) {
+                openSearchModalBtn.addEventListener('click', function() {
+                    searchModal.style.display = 'block';
+                    modalSearchInput.focus();
+                    // Limpa resultados e input ao abrir
+                    modalSearchInput.value = '';
+                    modalSearchResults.innerHTML = '';
+                });
+
+                searchModalClose.addEventListener('click', function() {
+                    searchModal.style.display = 'none';
+                    if (modalSearchInput) modalSearchInput.value = '';
+                    if (modalSearchResults) modalSearchResults.innerHTML = '';
+                });
+
+                searchModal.addEventListener('click', function(event) {
+                    if (event.target === searchModal) { // Clicou no overlay
+                        searchModal.style.display = 'none';
+                        if (modalSearchInput) modalSearchInput.value = '';
+                        if (modalSearchResults) modalSearchResults.innerHTML = '';
+                    }
+                });
+
+                modalSearchInput.addEventListener('input', function() {
+                    displaySearchResultsInModal(this, modalSearchResults);
+                });
+
+                modalSearchInput.addEventListener('keydown', function(event) {
+                    if (event.key === 'Enter') {
+                        event.preventDefault(); // Evita o envio do formulário
+                    }
+                });
+
+                // Impede que cliques dentro do modal fechem o modal ao clicar no overlay
+                searchModal.querySelector('.search-modal-content').addEventListener('click', function(event) {
+                    event.stopPropagation();
+                });
+            }
+
+            // FUNÇÃO PARA LIDAR COM EVENTOS DE CLIQUE/TOQUE PARA FECHAR ELEMENTOS (GLOBAL)
+            function handleOutsideInteraction(e) {
+                const target = e.target;
+                
+                // Se o modal de pesquisa estiver aberto E o clique/toque foi FORA do modal (apenas no overlay)
+                if (searchModal && searchModal.style.display === 'block' && target === searchModal) {
+                    searchModal.style.display = 'none';
+                    if (modalSearchInput) modalSearchInput.value = '';
+                    if (modalSearchResults) modalSearchResults.innerHTML = '';
+                }
+            }
+
+            document.addEventListener('click', handleOutsideInteraction, true);
+            document.addEventListener('touchend', handleOutsideInteraction, true);
+
+            // Reposicionamento ao rolar ou redimensionar (com debounce) - AGORA APENAS PARA O MODAL SE PRECISAR
+            // As lógicas para searchResultsContainer foram removidas.
+            window.addEventListener('resize', () => {
+                // Não há necessidade de reposicionar o modal, pois ele é centralizado via CSS.
+                // Mas a função de debounce pode ser mantida para outros fins se necessário.
+            }, 50);
+            
+            document.addEventListener('keydown', function(e) {
+                if (e.key === "Escape") {
+                    if (searchModal && searchModal.style.display === 'block') {
+                        searchModal.style.display = 'none';
+                        if (modalSearchInput) modalSearchInput.value = '';
+                        if (modalSearchResults) modalSearchResults.innerHTML = '';
+                    }
+                }
+            });
+
+            console.log("Feira Dinâmica: Pesquisa configurada para modal universal.");
             
             // Inicializar os plugins do tema (incluindo Gumshoe) APÓS o buildContent()
             if (typeof Docs !== 'undefined' && typeof Docs.init === 'function') {

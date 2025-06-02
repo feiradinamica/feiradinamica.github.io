@@ -1,3 +1,4 @@
+/* --- Seções do seu CSS original (mantidas para compatibilidade com o tema base) --- */
 .card.shadow-sm {
     transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     border: none;
@@ -21,7 +22,6 @@
     background: rgba(40, 51, 79, 0.05) !important;
 }
 
-/* Adicione junto com o hover para um efeito premium */
 @keyframes softPulse {
     0% { border-left-width: 3px; }
     50% { border-left-width: 5px; }
@@ -32,33 +32,164 @@
     animation: softPulse 1.5s infinite;
 }
 
-/* Fundo da bolinha: AZUL */
 .theme-icon-holder.card-icon-holder {
-  background-color: #f5f9ff !important;
+    background-color: #f5f9ff !important;
 }
 
-/* Fundo da bolinha: BRANCO */
 .card:hover .theme-icon-holder.card-icon-holder {
-  background-color: #ffffff !important;
+    background-color: #ffffff !important;
 }
 
-/* Transição suave (opcional) */
 .theme-icon-holder.card-icon-holder,
 .theme-icon-holder svg.svg-inline--fa {
-  transition: all 0.3s ease !important;
+    transition: all 0.3s ease !important;
 }
 
 .theme-icon-holder {
-  background-color: #f5f9ff !important;
+    background-color: #f5f9ff !important;
 }
 
 .nav-item.active .theme-icon-holder {
-  background-color: #F63700 !important;
+    background-color: #F63700 !important;
 }
 
-.docs-branding .top-search-box {
-  width: 500px;
-  margin-left: 300px; /* garante que não está sendo empurrado */
-  margin-right: auto; /* empurra para a esquerda no flex */
-  width: 100%;
+/* --- Ajustes para o contêiner de utilitários no cabeçalho (para o botão da lupa) --- */
+/* Garante que o contêiner de utilitários no header seja um flex container e alinha a lupa à direita */
+.docs-top-utilities {
+    display: flex !important;
+    align-items: center !important; /* Centraliza verticalmente o botão da lupa */
+    justify-content: flex-end !important; /* Alinha o botão da lupa à direita */
+    flex-grow: 1 !important; /* Permite que o container de utilities ocupe o espaço restante */
+}
+
+/* --- Estilo para o botão da lupa (para todas as resoluções) --- */
+#open-search-modal-btn {
+    font-size: 1.5rem !important; /* Tamanho do ícone da lupa */
+    color: #666 !important; /* Cor do ícone */
+    background: none !important; /* Sem fundo */
+    border: none !important; /* Sem borda */
+    cursor: pointer !important; /* Cursor de clique */
+    padding: 0 10px !important; /* Espaçamento interno para facilitar o clique/toque */
+    margin: 0 !important; /* Remove qualquer margem padrão */
+    line-height: 1 !important; /* Ajuda no alinhamento vertical do ícone */
+    position: relative !important; /* Permite ajuste fino com 'top' */
+    top: -1px !important; /* AJUSTE FINO: Altere este valor para cima/baixo se a lupa não estiver perfeitamente alinhada */
+    height: auto !important; /* Ajusta a altura automaticamente ao conteúdo */
+    display: flex !important; /* Garante que o botão em si é um item flexível */
+    align-items: center !important; /* Centraliza o ícone dentro do botão */
+}
+
+#open-search-modal-btn:hover {
+    color: #333 !important;
+}
+
+/* --- Estilos para o Modal de Pesquisa (visível apenas quando JS o mostra) --- */
+.search-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.98) !important; /* Fundo semi-transparente */
+    z-index: 10000 !important; /* Acima de tudo */
+    display: none; /* Oculto por padrão, JavaScript exibe */
+    overflow-y: auto !important; /* Permite rolar se o conteúdo for muito grande */
+    padding-top: 20px !important;
+    -webkit-overflow-scrolling: touch !important; /* Rolagem suave em iOS */
+}
+
+.search-modal-content {
+    background: white !important;
+    padding: 20px !important;
+    margin: 0 auto !important; /* Centraliza horizontalmente por padrão (mobile) */
+    max-width: 600px !important; /* Largura padrão para mobile */
+    border-radius: 8px !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+}
+
+/* NOVO: Media Query para telas maiores (desktop) */
+@media (min-width: 992px) { /* Geralmente, 'lg' breakpoint do Bootstrap */
+    .search-modal-content {
+        max-width: 90% !important; /* Ocupa 90% da largura da tela */
+        width: 100% !important; /* Garante que ocupe a largura definida pelo max-width */
+        height: calc(100vh - 40px) !important; /* Ocupa quase 100% da altura da viewport, com 20px de padding em cima e embaixo */
+        margin-top: 20px !important; /* Margem superior para alinhar verticalmente */
+        margin-bottom: 20px !important; /* Margem inferior */
+        border-radius: 8px !important; /* Mantém a borda arredondada */
+        display: flex !important; /* Usar flexbox para organizar o conteúdo interno */
+        flex-direction: column !important; /* Organiza itens em coluna */
+    }
+
+    .search-modal-body {
+        flex-grow: 1 !important; /* Permite que o corpo do modal ocupe o espaço restante */
+        overflow-y: auto !important; /* Rolagem interna para os resultados se forem muitos */
+    }
+}
+
+.search-modal-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 15px !important;
+    border-bottom: 1px solid #eee !important;
+    padding-bottom: 10px !important;
+}
+
+.search-modal-close {
+    background: none !important;
+    border: none !important;
+    font-size: 2rem !important;
+    cursor: pointer !important;
+    color: #888 !important;
+    line-height: 1 !important;
+    padding: 0 !important;
+}
+.search-modal-close:hover {
+    color: #333 !important;
+}
+
+/* Estilos para os resultados da pesquisa dentro do modal */
+#modal-search-results li {
+    border-bottom: 1px solid #eee !important;
+    padding: 8px 12px !important;
+    cursor: pointer !important;
+    transition: background-color 0.2s ease !important;
+}
+#modal-search-results li:last-child {
+    border-bottom: none !important;
+}
+#modal-search-results li:hover {
+    background-color: #f8f8f8 !important;
+}
+#modal-search-results strong {
+    color: #333 !important;
+}
+#modal-search-results small {
+    color: #777 !important;
+}
+
+/* Garante que o input de pesquisa no modal seja responsivo */
+.search-modal-body .search-form .search-input {
+    width: 100% !important;
+}
+
+/* --- Media Queries (simplificadas e focadas no layout geral, não mais na pesquisa) --- */
+
+/* Ajuste de layout para o cabeçalho (mantido para garantir alinhamento geral) */
+.branding.docs-branding .container-fluid {
+    display: flex !important;
+    align-items: center !important; /* Alinha verticalmente hambúrguer, logo e lupa */
+    justify-content: space-between !important; /* Distribui o espaço entre eles */
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    min-height: auto !important;
+}
+
+/* Wrapper do hambúrguer e logo */
+.docs-logo-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    flex-grow: 0 !important;
+    flex-shrink: 0 !important;
+    padding-right: 10px !important;
 }
