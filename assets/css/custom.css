@@ -58,8 +58,9 @@
 .docs-top-utilities {
     display: flex !important;
     align-items: center !important; /* Centraliza verticalmente o botão da lupa */
-    justify-content: flex-end !important; /* Alinha o botão da lupa à direita */
-    flex-grow: 1 !important; /* Permite que o container de utilities ocupe o espaço restante */
+    justify-content: flex-end !important; /* Alinha o botão da lupa à direita */    
+    flex-grow: 1 !important;
+    margin-top: 10px;
 }
 
 /* --- Estilo para o botão da lupa (para todas as resoluções) --- */
